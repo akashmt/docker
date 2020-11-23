@@ -79,8 +79,8 @@ export default class CreateTodo extends Component {
 
     render() {
         if(this.state.keycloak) {
-            if(this.state.authenticated) return (
-            <div style={{marginTop: 20}}>
+            if(this.state.authenticated && this.state.keycloak.tokenParsed.roles.indexOf("admin") > -1) return (
+                <div style={{marginTop: 20}}>
                 <h3>Create New Todo</h3>
                 <form onSubmit={this.onSubmit}>
                     <div className="form-group">

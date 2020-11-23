@@ -3,7 +3,7 @@ const app = express();
 var session = require('express-session');
 var Keycloak = require('keycloak-connect');
 
-let keycloak;
+let _keycloak;
 
 var keycloakConfig = {
   "realm": "Demo-Realm",
@@ -13,15 +13,16 @@ var keycloakConfig = {
   "resource": "node-microservice",
   "verify-token-audience": true,
   "use-resource-role-mappings": true,
-  "confidential-port": 0
+  "confidential-port": 0,
+  "realmPublicKey": 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqHp/JTon/QivLhrnzcAdKs1ia8aea5k8wBzoBsE6RtpRnPthxbYhjns+JqcqbPsu1i70824fjl6i68P3IQ/INpofNSG3r1FVwo4rLrJ2YZJLRgxjtT3IpRsH79TFueJJen4jhMtRC81Z/sFBvflKxw75HcH99dNzuWFR88dSJ74tRBwmP3Z0LSanOcb/xNQXTNXbj1OAfIUIhC3AONRa7xTYltBH0DyjvWD4K/zmPtHMLXgEFIWYubzCtU3C8WCURP6Irqfr/sF4hPDjzw0mHElpD85vwo37lssHMQZpnmZXh4tG6IQ6WhL53+AXkJQeqDyXI/2gnUDQY64+cobkdQIDAQAB'
 }
 
 function initKeycloak() {
 
   
-  if(keycloak) {
+  if(_keycloak) {
     console.log("Initializing Keycloak...");
-    return keycloak;
+    return _keycloak;
   }
   else {
     console.log("Initializing Keycloak..");
@@ -34,10 +35,10 @@ function initKeycloak() {
       store: memoryStore
     }));
 
-    keycloak = new Keycloak({ 
+    _keycloak  = new Keycloak({ 
       store: memoryStore
     }, keycloakConfig);
-    return keycloak;
+    return _keycloak ;
   }
 }
 

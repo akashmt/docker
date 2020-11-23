@@ -28,7 +28,7 @@ connection.once('open', function() {
     console.log("MongoDB database connection established successfully");
 })
 
-todoRoutes.route('/').get(function(req, res) {
+todoRoutes.route('/').get(keycloak.protect(['user', 'admin']), function(req, res) {
     Todo.find(function(err, todos) {
         if (err) {
             console.log(err);
@@ -38,14 +38,14 @@ todoRoutes.route('/').get(function(req, res) {
     });
 });
 
-todoRoutes.route('/:id').get(function(req, res) {
+todoRoutes.route('/:id').get(keycloak.protect(['user', 'admin']), function(req, res) {
     let id = req.params.id;
     Todo.findById(id, function(err, todo) {
         res.json(todo);
     });
 });
 
-todoRoutes.route('/add').post(function(req, res) {
+todoRoutes.route('/add').post(keycloak.protect('admin'), function(req, res) {
     let todo = new Todo(req.body);
     todo.save()
         .then(todo => {
@@ -56,7 +56,7 @@ todoRoutes.route('/add').post(function(req, res) {
         });
 });
 
-todoRoutes.route('/update/:id').post(function(req, res) {
+todoRoutes.route('/update/:id').post(keycloak.protect(['user', 'admin']), function(req, res) {
     Todo.findById(req.params.id, function(err, todo) {
         if (!todo)
             res.status(404).send('data is not found');
