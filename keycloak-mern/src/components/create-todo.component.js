@@ -23,7 +23,6 @@ export default class CreateTodo extends Component {
     }
 
     componentDidMount() {
-        console.log(this.state);
         const keycloak = Keycloak('/keycloak.json');
         keycloak.init({onLoad: 'login-required', checkLoginIframe: false}).then(authenticated => {
             this.setState({ keycloak: keycloak, authenticated: authenticated })
@@ -80,7 +79,6 @@ export default class CreateTodo extends Component {
 
     render() {
         if(this.state.keycloak) {
-            console.log(this.state.keycloak);
             if(this.state.authenticated) return (
             <div style={{marginTop: 20}}>
                 <h3>Create New Todo</h3>

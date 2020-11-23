@@ -1,49 +1,61 @@
 version: "3"
 services:
+  server:
+    build:
+      context: ./keycloak-backend
+      dockerfile: Dockerfile
+    image: todos-api-server
+    restart: always
+    container_name: todos-node-server
+    volumes:
+      - ./keycloak-backend/:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - "4000:4000"
+    depends_on:
+      - mongo
+      - keycloak
+    env_file: ./keycloak-backend/.env
+    environment:
+      - NODE_ENV=development
+    networks:
+      - todos-mern-app
+  mongo:
+    image: mongo
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - todos-mern-app
   client:
+    build:
+      context: ./keycloak-mern
+      dockerfile: Dockerfile
     image: todos-react-app
+    restart: always
     stdin_open: true
     container_name: todos-react-client
     command: yarn start
     volumes:
-      - ./keycloak-mern/:/usr/src/app
-      - /usr/src/app/app/node_modules
+      - ./keycloak-mern/:/usr/app
+      - /usr/app/node_modules
     depends_on:
       - server
     ports: 
       - "3000:3000"
     networks:
       - todos-mern-app
-  server:
-    image: todos-api-server
-    container_name: todos-node-server
-    ports:
-      - "4000:4000"
-    networks:
-      - todos-mern-app
-    depends_on:
-      - mongo
-    env_file: ./keycloak-backend/.env
-    environment:
-      - NODE_ENV=development
-  mongo:
-    image: mongo
-    ports:
-      - "27017:27017"
-    networks:
-      - todos-mern-app
-    volumes:
-      - mongo-data:/data/db
-  keycloak-container:
-    image: jboss/keycloak:5.0.0
+  keycloak:
+    image: jboss/keycloak
     command: 
       -Djboss.socket.binding.port-offset=101
-    restart: always
     environment:
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: admin
     ports:
       - 8181:8181
+    hostname: 'keycloak-host'
     networks:
       - todos-mern-app
 networks:
@@ -51,5 +63,6 @@ networks:
     driver: bridge
 volumes:
   mongo-data:
+  node_modules:
   web-root:
     driver: local
